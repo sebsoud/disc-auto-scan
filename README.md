@@ -1,4 +1,4 @@
-# auto-scan-disk
+# disc-auto-scan
 
 This project is an automation for disc surface scan, to check dvds and bluray discs.
 It is programmed with AutoIt (windows) and it pilots the "MPC-HC" and "VSO Inspector" applications (both freeware)
