@@ -1,0 +1,2 @@
+- programmé et compilé avec AutoIt
+- binaire vérifié avec AVG
