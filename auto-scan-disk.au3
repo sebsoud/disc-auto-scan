@@ -1,28 +1,31 @@
 #Region ;**** Directives created by AutoIt3Wrapper_GUI ****
+#AutoIt3Wrapper_Version=Beta
 #AutoIt3Wrapper_Icon=auto-scan-disk.ico
-#AutoIt3Wrapper_Res_Fileversion=0.1
+#AutoIt3Wrapper_Res_Fileversion=0.1.0.0
+#AutoIt3Wrapper_Res_ProductVersion=0.1
+#AutoIt3Wrapper_Res_LegalCopyright=Sébastien Soudan 2021
 #AutoIt3Wrapper_Res_Language=1036
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
-#Region ;**** Directives created by AutoIt3Wrapper_GUI ****
-#AutoIt3Wrapper_Icon=auto_scan_disk.ico
-#EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
-#Region ;**** Directives created by AutoIt3Wrapper_GUI ****
-#AutoIt3Wrapper_Icon=auto_scan_disk_nMu_icon.ico
-#EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
+
+
 ; by seb
 
 #include <WindowsConstants.au3>
 #include <Array.au3> ; Required for _ArrayDisplay() only.
 #include <GuiTab.au3>
 #include <WinAPISysWin.au3>
-#include <GuiComboBox.au3>
+#include <Misc.au3>
 #include <GUIConstantsEx.au3>
+#include <GuiComboBox.au3>
 #include <MsgBoxConstants.au3>
 #include <ComboConstants.au3>
 #include <EditConstants.au3>
 
-
 $DBT_DEVICEARRIVAL = "0x00008000"
+
+
+$sPretPourDisque = "-PRET, vous pouvez insérer UN disque puis ATTENDRE que le scan ait été lancé"
+$sReadyForDisc = "-READY, you can insert ONE disc then WAIT that scan is launched"
 
 $sIniFile = ".\auto-scan-disk.ini"
 
@@ -67,8 +70,9 @@ AddTrace("  Lecteurs configuré pour autoscan: " & $sDriveList, "  Drives config
 
 GUIRegisterMsg($WM_DEVICECHANGE , "DeviceChange")
 
+; inform user that auto-scan-disk is ready for new disc
 AddTrace("", "")
-AddTrace("-PRET, vous pouvez insérer UN disque puis ATTENDRE", "-READY, you can insert ONE disc then WAIT")
+AddTrace($sPretPourDisque, $sReadyForDisc)
 
 
 Do
@@ -102,7 +106,7 @@ Func DeviceChange($hWndGUI, $MsgID, $WParam, $LParam)
 		Local Const $DriveLetter = GetDriveLetterFromUnitMask($UnitMask)
 
 		if StringInStr ($sDriveList, $DriveLetter) Then
-			AddTrace("  Disque inséré dans lecteur " & $DriveLetter, "  Disc inserted in drive " & $DriveLetter)
+			AddTrace("  Disque inséré dans lecteur " & $DriveLetter & ", veuillez patienter..." , "  Disc inserted in drive " & $DriveLetter & ", please wait...")
 
 			; wait enough time that disc is recognized by windows
 			Sleep(7000)
@@ -274,10 +278,11 @@ Func PerformScan($DriveLetter)
 	; minimize window
 	WinSetState($hVSOWnd, "", @SW_MINIMIZE )
 
-	AddTrace("-Scan en cours... Vous pourrez fermer la fenêtre VSO Inspector lorsque scan terminé", "-Scan on going... You can close the VSO Inspector window when finished")
+	AddTrace("-Scan en cours... Vous pouvez reprendre la main sur Windows", "-Scan on going... You can again work in Windows")
 
+	; inform user that auto-scan-disk is ready for new disc
 	AddTrace("", "")
-	AddTrace("-PRET, vous pouvez insérer UN disque puis ATTENDRE", "-READY, you can insert ONE disc then WAIT")
+	AddTrace($sPretPourDisque, $sReadyForDisc)
 
 EndFunc ;==>PerformScan
 

@@ -1,2 +1,88 @@
-- programmé et compilé avec AutoIt
-- binaire vérifié avec AVG
+auto-scan-disk
+--------------
+
+Ce logiciel permet d'automatiser le scan de surface de disques (cd, dvd, bluray), afin de vérifier leur intégrité physique.
+Comme l'informe le site http://bluraydefectueux.com, des disques ont des problèmes de vieillissement (voir site pour détails)
+
+auto-scan-disk lance automatiquement les applications "MPC-HC" et "VSO Inspector" (freewares windows), lors de l'insertion d'un disque
+
+
+------------ 
+INSTALLATION
+------------ 
+
+1) Dézipper les fichiers d'auto-scan-disk dans un dossier choisi (avec droits d'écriture pour le fichier .ini)
+
+----
+2) Installer les applications externes à piloter:
+
+a) "MPC-HC" 
+site de téléchargement officiel:
+https://github.com/mpc-hc/mpc-hc/releases/
+
+Choisir le .exe, qui permettra l'installation.
+x64 correspond à la version 64 bits, et x86 correspond à la version 32 bits
+Le choix dépend de la version de windows que vous possédez; la version 64 bits ne peut fonctionner que sur une version 64 bits de windows
+
+b) "VSO Inspector" voir: http://fr.vso-software.fr/products/inspector/inspector.php pour téléchargement
+
+----
+3) Paramétrer auto-scan-disk
+Editer le fichier "auto-scan-disk.ini"
+
+Voici les entrées à paramétrer pour votre situation:
+
+a) DriveList permet de lister les lecteurs à surveiller. Indiquer la ou les lettres (séparateur: espace)
+exemples:
+DriveList=D
+DriveList=E F
+
+b) MPCHC précise l'éxécutable MPC-HC, avec chemin complet
+Par défaut, le .ini contient:
+MPCHC=C:\Program Files\MPC-HC\mpc-hc64.exe
+Cela correspond à la version 64 bits, sur une version windows 64 bits. Si vous avez installé la version 32 bits (sur une version 64 bits de windows), cela sera plutôt:
+MPCHC=C:\Program Files (x86)\MPC-HC\mpc-hc.exe
+
+Si vous avez une version 32 bits de windows, vous devez indiquer:
+MPCHC=C:\Program Files\MPC-HC\mpc-hc.exe
+
+IMPORTANT: chemins d'installation de "VSO Inspector" et MPC-HC:
+Si vous avez installé ces logiciels à un autre endroit que le défaut (i.e pas sur C: ou bien si vous avez modifié le dossier par défaut de l'installateur),
+alors il vous faut faire correspondre les entrées:
+VSOInspector
+et
+MPCHC
+dans le fichier "auto-scan-disk.ini"
+
+
+-----------
+UTILISATION
+-----------
+
+- lancer auto-scan-disk.exe (une seule fois suffit)
+
+- pour chacun des lecteurs paramétrés, lorsqu'un disque est inséré puis détecté par windows, auto-scan-disk va automatiquement:
+lancer MPC-HC et ouvrir le disque avec, attendre quelques secondes, puis fermer MPC-HC
+puis lancer "VSO Inspector", lancer le scan sur le disque, et minimiser cette fenêtre
+
+IMPORTANT:
+Après l'insertion d'un disque dans un lecteur, il ne faut faire aucune action sur le pc, et attendre qu'auto-scan-disk ait lancé le scan et minimisé la fenêtre VSO.
+Seulement après cela il est possible soit de travailler sur le pc, soit d'insérer un autre disque si le pc a plusieurs lecteurs.
+Si vous insérez un autre disque avant la fin du traitement du dernier disque inséré, alors il y aura très probablement une mauvaise gestion de l'insertion du disque et/ou de l'automatisation, 
+et ce avec un risque aussi pour le disque précédemment inséré s'il est encore en cours de traitement par auto-scan-disk 
+
+- la fenêtre d'auto-scan-disk donne des informations sur l'état du traitement
+
+Une fois que le scan du disque a été correctement lancé, il est ensuite à effectuer manuellement:
+- la vérification que le scan s'est bien passé
+- éventuellement enregistrer le rapport de scan
+- vous pouvez alors fermer la fenêtre "VSO Inspector"; auto-scan-disk lance automatiquement une fenêtre "VSO Inspector" pour chaque disque nouvellement inséré
+
+
+---------------------
+LICENCE ET DISCLAIMER
+---------------------
+L'utilisation d'auto-scan-disk est gratuite. Les développeurs ne peuvent être tenus pour responsables de dommages qui seraient liés à son utilisation.
+auto-scan-disk est programmé et compilé avec AutoIt
+L'éxécutable a été vérifié avec AVG
+
