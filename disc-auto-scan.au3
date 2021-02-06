@@ -1,6 +1,6 @@
 #Region ;**** Directives created by AutoIt3Wrapper_GUI ****
 #AutoIt3Wrapper_Version=Beta
-#AutoIt3Wrapper_Icon=auto-scan-disk.ico
+#AutoIt3Wrapper_Icon=disc-auto-scan.ico
 #AutoIt3Wrapper_Res_Fileversion=0.1.0.0
 #AutoIt3Wrapper_Res_ProductVersion=0.1
 #AutoIt3Wrapper_Res_LegalCopyright=Sébastien Soudan 2021
@@ -27,7 +27,7 @@ $DBT_DEVICEARRIVAL = "0x00008000"
 $sPretPourDisque = "-PRET, vous pouvez insérer UN disque puis ATTENDRE que le scan ait été lancé"
 $sReadyForDisc = "-READY, you can insert ONE disc then WAIT that scan is launched"
 
-$sIniFile = ".\auto-scan-disk.ini"
+$sIniFile = ".\disc-auto-scan.ini"
 
 ; language (EN or FR)
 $sLang = IniRead($sIniFile, "Configuration", "Lang", "EN")
@@ -38,7 +38,7 @@ $bDebugInfo = ($sDebugInfo == "Y")
 
 $idExit=0
 
-GUICreate("Auto scan disk", 700, 400)
+GUICreate("Disc auto scan", 700, 400)
 
 If ($sLang == "FR") Then
 	$idExit = GUICtrlCreateButton("Quitter", 640, 375, 50, 20)
@@ -70,7 +70,7 @@ AddTrace("  Lecteurs configuré pour autoscan: " & $sDriveList, "  Drives config
 
 GUIRegisterMsg($WM_DEVICECHANGE , "DeviceChange")
 
-; inform user that auto-scan-disk is ready for new disc
+; inform user that program is ready for new disc
 AddTrace("", "")
 AddTrace($sPretPourDisque, $sReadyForDisc)
 
@@ -280,7 +280,7 @@ Func PerformScan($DriveLetter)
 
 	AddTrace("-Scan en cours... Vous pouvez reprendre la main sur Windows", "-Scan on going... You can again work in Windows")
 
-	; inform user that auto-scan-disk is ready for new disc
+	; inform user that program is ready for new disc
 	AddTrace("", "")
 	AddTrace($sPretPourDisque, $sReadyForDisc)
 
