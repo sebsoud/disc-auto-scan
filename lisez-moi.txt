@@ -40,11 +40,11 @@ DriveList=E F
 b) MPCHC précise l'éxécutable MPC-HC, avec chemin complet
 Par défaut, le .ini contient:
 MPCHC=C:\Program Files\MPC-HC\mpc-hc64.exe
-Cela correspond à la version 64 bits, sur une version windows 64 bits. Si vous avez installé la version 32 bits (sur une version 64 bits de windows), cela sera plutôt:
-MPCHC=C:\Program Files (x86)\MPC-HC\mpc-hc.exe
+ceci correspond à l'installation de la version 64 bits, dans un windows version 64 bits.
 
-Si vous avez une version 32 bits de windows, vous devez indiquer:
-MPCHC=C:\Program Files\MPC-HC\mpc-hc.exe
+Le plus simple pour vérifier/trouver ce paramètre:
+- clic droit sur le raccourci qui a été crée sur le bureau, puis "Propriétés"
+- le bon paramètre est alors dans le champ "Cible". Vous pouvez faire un copier-coller de ce texte, sachant qu'il faut enlever les guillemets dans auto-scan-disk.ini
 
 IMPORTANT: chemins d'installation de "VSO Inspector" et MPC-HC:
 Si vous avez installé ces logiciels à un autre endroit que le défaut (i.e pas sur C: ou bien si vous avez modifié le dossier par défaut de l'installateur),
