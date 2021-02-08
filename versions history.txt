@@ -1,0 +1,8 @@
+0.2 beta
+--------
+- improved disc detection loop; added message in case the user inserted a disc before previous one treatment was finished
+
+
+0.1 beta
+--------
+First published version
