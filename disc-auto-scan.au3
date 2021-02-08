@@ -23,6 +23,7 @@
 
 $DBT_DEVICEARRIVAL = "0x00008000"
 
+$DriveLetter = ""
 
 $sPretPourDisque = "-PRET, vous pouvez insérer UN disque puis ATTENDRE que le scan ait été lancé"
 $sReadyForDisc = "-READY, you can insert ONE disc then WAIT that scan is launched"
@@ -74,9 +75,16 @@ GUIRegisterMsg($WM_DEVICECHANGE , "DeviceChange")
 AddTrace("", "")
 AddTrace($sPretPourDisque, $sReadyForDisc)
 
+$bScanToLaunch = False
 
 Do
     $GuiMsg = GUIGetMsg()
+
+	If ($bScanToLaunch) Then
+		PerformScan($DriveLetter)
+		$bScanToLaunch = False
+	Endif
+
 Until $GuiMsg = $GUI_EVENT_CLOSE Or $GuiMsg = $idExit
 
 
@@ -95,6 +103,7 @@ EndFunc
 ; handler of $WM_DEVICECHANGE
 Func DeviceChange($hWndGUI, $MsgID, $WParam, $LParam)
     If $WParam == $DBT_DEVICEARRIVAL Then
+
         ; Create a struct from $lParam which contains a pointer to a Windows-created struct.
 
         Local Const $tagDEV_BROADCAST_VOLUME = "dword dbcv_size; dword dbcv_devicetype; dword dbcv_reserved; dword dbcv_unitmask; word dbcv_flags"
@@ -103,20 +112,21 @@ Func DeviceChange($hWndGUI, $MsgID, $WParam, $LParam)
         Local Const $DeviceType = DllStructGetData($DEV_BROADCAST_VOLUME, "dbcv_devicetype")
 		Local Const $UnitMask = DllStructGetData($DEV_BROADCAST_VOLUME, "dbcv_unitmask")
 
-		Local Const $DriveLetter = GetDriveLetterFromUnitMask($UnitMask)
+		$DriveLetter = GetDriveLetterFromUnitMask($UnitMask)
 
-		if StringInStr ($sDriveList, $DriveLetter) Then
-			AddTrace("  Disque inséré dans lecteur " & $DriveLetter & ", veuillez patienter..." , "  Disc inserted in drive " & $DriveLetter & ", please wait...")
-
-			; wait enough time that disc is recognized by windows
-			Sleep(7000)
-
-			PerformScan($DriveLetter)
+		If StringInStr ($sDriveList, $DriveLetter) Then
+			If ($bScanToLaunch) Then
+				; scan of previous disc not finished! -> log warning message
+				AddTrace("ATTENTION: insertion de disque dans le lecteur " & $DriveLetter & " TROP TOT, ne sera pas traité" , "WARNING: disc inserted TOO EARLY in drive " & $DriveLetter & ", will not be treated")
+				Return
+			Else
+				AddTrace("  Disque inséré dans lecteur " & $DriveLetter & ", veuillez patienter..." , "  Disc inserted in drive " & $DriveLetter & ", please wait...")
+			EndIf
 		EndIf
 
+		$bScanToLaunch = True
     EndIf
 EndFunc
-
 
 Func GetDriveLetterFromUnitMask($UnitMask)
 
@@ -141,6 +151,9 @@ EndFunc ;==>GetDriveLetterFromUnitMask
 
 
 Func PerformScan($DriveLetter)
+
+	; wait enough time that disc is recognized by windows
+	Sleep(7000)
 
 	; launch MPC-HC, so dvd is accessible if protected
 	Local $sMPCHC = IniRead($sIniFile, "Configuration", "MPCHC", "C:\Program Files\MPC-HC\mpc-hc64.exe")
