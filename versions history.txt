@@ -1,7 +1,9 @@
 0.2 beta
 --------
 - improved disc detection loop; added message in case the user inserted a disc before previous one treatment was finished
-
+- automatic spread of VSO Inspector windows on screen; this is useful for multi-drives scans.
+  Optimized according to screen resolution, recommended monitor min resolution is 1920*1080, but it supports smaller resolution (minimum 1280*800)
+- added buttons at top of window, one per configured drive. Each button permit to restore/minimize the corresponding last launched VSO Inspector window
 
 0.1 beta
 --------

@@ -1,0 +1,7 @@
+TECHNICAL LIMITATIONS
+---------------------
+
+VSO Inspector
+-------------
+Since it is developped in Delphi, some controls are not windows-accessible.
+Thus it's not possible from external application to retrieve: scan log (Class=TVirtualStringTree) , error status, drive speed (Class=TPanel)...
