@@ -1,5 +1,0 @@
-source:
-https://icones8.fr/icon/pack/user-interface/fluent
-
-
-conversion: https://image.online-convert.com/convert/png-to-ico

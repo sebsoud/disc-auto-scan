@@ -18,11 +18,17 @@ INSTALLATION
 
 a) "MPC-HC"
 site de téléchargement officiel:
-https://github.com/mpc-hc/mpc-hc/releases/
+https://github.com/clsid2/mpc-hc/releases
 
+Chaque release est présentée par "bloc d'infos". Le numéro de release est indiqué dans la colonne de gauche
+Rechercher la dernière release (numéro le plus grand) qui est NON notée "Development Build"
+En bas du bloc d'info de cette release, cliquer sur "Assets" pour avoir les détails.
 Choisir le .exe, qui permettra l'installation.
 x64 correspond à la version 64 bits, et x86 correspond à la version 32 bits
-Le choix dépend de la version de windows que vous possédez; la version 64 bits ne peut fonctionner que sur une version 64 bits de windows
+Le choix dépend de la version de windows que vous possédez; la version 64 bits ne peut fonctionner que sur une version 64 bits de windows.
+Par défaut vous pouvez choisir l'installeur dont le nom finit par x86.exe
+
+Voici par exemple un lien direct vers la version 1.9.9: https://github.com/clsid2/mpc-hc/releases/tag/1.9.9
 
 b) "VSO Inspector" voir: http://fr.vso-software.fr/products/inspector/inspector.php pour téléchargement
 
@@ -37,22 +43,20 @@ exemples:
 DriveList=D
 DriveList=E F
 
-b) MPCHC précise l'éxécutable MPC-HC, avec chemin complet
-Par défaut, le .ini contient:
-MPCHC=C:\Program Files\MPC-HC\mpc-hc64.exe
-ceci correspond à l'installation de la version 64 bits, dans un windows version 64 bits.
+b) disc-auto-scan récupère automatiquement les chemins d'installation de MPC-HC et VSO Inspector depuis les raccourcis du menu démarrer, 
+que les programmes d'installation ont crée
+
+S'il y au lancement de disc-auto-scan il y a un message d'erreur correspondant à ces chemins,
+alors cette reconnaissance ne fonctionne plus (le programme d'installation a changé de logique)
+et il vous faut faire manuellement correspondre les entrées:
+VSOInspectorPath=  
+et
+MPCHC=
+dans le fichier "disc-auto-scan.ini"
 
 Le plus simple pour vérifier/trouver ce paramètre:
 - clic droit sur le raccourci qui a été crée sur le bureau, puis "Propriétés"
 - le bon paramètre est alors dans le champ "Cible". Vous pouvez faire un copier-coller de ce texte, sachant qu'il faut enlever les guillemets dans disc-auto-scan.ini
-
-IMPORTANT: chemins d'installation de "VSO Inspector" et MPC-HC:
-Si vous avez installé ces logiciels à un autre endroit que le défaut (i.e pas sur C: ou bien si vous avez modifié le dossier par défaut de l'installateur),
-alors il vous faut faire correspondre les entrées:
-VSOInspector
-et
-MPCHC
-dans le fichier "disc-auto-scan.ini"
 
 
 -----------
@@ -75,7 +79,7 @@ et ce avec un risque aussi pour le disque précédemment inséré s'il est encor
 
 Une fois que le scan du disque a été correctement lancé, il est ensuite à effectuer manuellement:
 - la vérification que le scan s'est bien passé
-- éventuellement enregistrer le rapport de scan
+- éventuellement enregistrer le rapport de scan 
 - vous pouvez alors fermer la fenêtre "VSO Inspector"; disc-auto-scan lance automatiquement une fenêtre "VSO Inspector" pour chaque disque nouvellement inséré
 
 

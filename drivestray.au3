@@ -9,8 +9,7 @@
 
 #include <APIFilesConstants.au3>
 #include <FileConstants.au3>
-
-Global Const $INVALID_HANDLE_VALUE = 0xFFFFFFFF
+#include <WinAPIConstants.au3>
 
 Global Const $SCSI_IOCTL_DATA_IN = 0x01
 Global Const $SCSI_IOCTL_DATA_OUT = 0x00
@@ -55,6 +54,8 @@ EndFunc
 
 Func CreateDLLStructures()
     $CDB_STRUCT = ("ubyte[" & String($SPTCDBSIZE) & "]")
+; doc: see	https://docs.microsoft.com/en-us/windows-hardware/drivers/ddi/ntddscsi/ns-ntddscsi-_scsi_pass_through
+; WARNING: 9th, ubyte is here only for byte alignment!
     $SCSI_PASS_THROUGH = "ushort;ubyte;ubyte;ubyte;ubyte;ubyte;ubyte;ubyte;ubyte[3];uint;uint;uint;uint;ubyte[" & String($SPTCDBSIZE) & "]"
     $SCSI_PASS_THROUGH_WITH_BUFFERS = $SCSI_PASS_THROUGH & ";ubyte[" & String($SENSEBUFFERSIZE) & "];ubyte[" & String($DATABUFFERSIZE) & "]"
 
@@ -93,66 +94,40 @@ Func PopulateSPTWB()
     $ID = 0x00
     $Lun = 0x00
 
-    DllStructSetData($sptwb, 1, $Len_spt);Length of pre-filler to be set before making call
-    DllStructSetData($sptwb, 2, 0x00);Checked on return from call
-    DllStructSetData($sptwb, 3, $Bus);SCSI bus # - I believe the port driver fills this in
-    DllStructSetData($sptwb, 4, $ID);SCSI ID # - I believe the port driver fills this in
-    DllStructSetData($sptwb, 5, $Lun);SCSI Lun # -I believe the port driver fills this in
-    DllStructSetData($sptwb, 6, $REALCDBSIZE);Length of CDB to be set before making call (12 for ATAPI compatibility)?
-    DllStructSetData($sptwb, 7, $SENSEBUFFERSIZE);Length of Sense buffer to be set before making call - or always 32?
-    DllStructSetData($sptwb, 8, $SCSI_IOCTL_DATA_IN);Flag for Data Transfer direction to be set before making call
+	; seb comment: see https://docs.microsoft.com/en-us/windows-hardware/drivers/ddi/ntddscsi/ns-ntddscsi-_scsi_pass_through
+    DllStructSetData($sptwb, 1, $Len_spt);Length | Length of pre-filler to be set before making call
+    DllStructSetData($sptwb, 2, 0x00); ScsiStatus | Checked on return from call
+    DllStructSetData($sptwb, 3, $Bus); PathId | SCSI bus # - I believe the port driver fills this in
+    DllStructSetData($sptwb, 4, $ID);  TargetId | SCSI ID # - I believe the port driver fills this in
+    DllStructSetData($sptwb, 5, $Lun); Lun | SCSI Lun # -I believe the port driver fills this in
+    DllStructSetData($sptwb, 6, $REALCDBSIZE); CdbLength | Length of CDB to be set before making call (12 for ATAPI compatibility)?
+    DllStructSetData($sptwb, 7, $SENSEBUFFERSIZE); SenseInfoLength | Length of Sense buffer to be set before making call - or always 32?
+    DllStructSetData($sptwb, 8, $SCSI_IOCTL_DATA_IN); DataIn | Flag for Data Transfer direction to be set before making call
     ;item #9 is simple a placehold for byte alignment, so ignore it
-    DllStructSetData($sptwb, 10, $DATABUFFERSIZE);Length of Data buffer to be set before making call - or always 512
-    DllStructSetData($sptwb, 11, 0x05);Timeout for call - to be set before making call
-    DllStructSetData($sptwb, 12, $Len_spt + $SENSEBUFFERSIZE);Offset from first byte to beginning of data buffer
-    DllStructSetData($sptwb, 13, $Len_spt);Offset from first byte to beginning of sense buffer
+    DllStructSetData($sptwb, 10, $DATABUFFERSIZE); DataTransferLength | Length of Data buffer to be set before making call - or always 512
+    DllStructSetData($sptwb, 11, 0x05); TimeOutValue | Timeout for call - to be set before making call
+    DllStructSetData($sptwb, 12, $Len_spt + $SENSEBUFFERSIZE); DataBufferOffset | Offset from first byte to beginning of data buffer
+    DllStructSetData($sptwb, 13, $Len_spt);	SenseInfoOffset | Offset from first byte to beginning of sense buffer
     For $i = 1 To $SPTCDBSIZE
-        DllStructSetData($sptwb, 14, DllStructGetData($cdb, 1, $i), $i);12 bytes of data representing the CDB
+        DllStructSetData($sptwb, 14, DllStructGetData($cdb, 1, $i), $i); | Cdb[16] 16 bytes of data representing the CDB
     Next
     DllStructSetData($sptwb, 15, 0x00, 1);Sense Buffer - leave alone before call
     DllStructSetData($sptwb, 16, 0x00, 1);Data Buffer - leave alone before call
 
 EndFunc   ;==>PopulateSPTWB
 
-Func ShowTrayInfoForAllOpticals()
-    $var = DriveGetDrive("cdrom")
-
-    If Not @error Then
-        MsgBox(4096, "Found 'em!", "Found " & $var[0] & " optical drive(s)!")
-        For $j = 1 To $var[0]
-            $hVolume = OpenVolume($var[$j])
-            If $hVolume = $INVALID_HANDLE_VALUE Then
-                MsgBox(4096, $var[$j] & " is not a valid Optical drive", "There was no optical drive at that drive letter, or you do not have high enough access to talk to it directly.")
-            Else
-                MsgBox(1, "Drive found", "Hey, drive " & $var[$j] & " (" & String($hVolume) & ") is a good optical drive - let's check the tray...")
-                If IsTrayOpen($hVolume, $var[$j]) Then
-                    MsgBox(1, "Tray Status", "The Tray for drive " & $var[$j] & " is open.")
-                Else
-                    MsgBox(1, "Tray Status", "The Tray for drive " & $var[$j] & " is closed.")
-                EndIf
-            EndIf
-            PopulateCDB()
-            PopulateSPTWB() ; to ensure a fresh SRB each time
-            ConsoleWrite("Closed? " & _CloseVolume($hVolume) & @LF)
-        Next
-    Else
-        MsgBox(4096, "No optical drives", "There were no optical drives found in your system")
-    EndIf
-EndFunc   ;==>ShowTrayInfoForAllOpticals
-
-
-
-Func IsDriveTrayOpen($driveLetter)
+; returns boolean. if sError<>"" an error occured
+Func IsDriveTrayOpen($driveLetter, ByRef $sError)
 	$sDriveToTest = $driveLetter & ":" ; must add the : character
 
 	$bIsTrayOpen = False
+	$sError = ""
 
-	$hVolume = OpenVolume($sDriveToTest)
-	If $hVolume = $INVALID_HANDLE_VALUE Then
-;		MsgBox(4096, $var[$j] & " is not a valid Optical drive", "There was no optical drive at that drive letter, or you do not have high enough access to talk to it directly.")
+	$hVolume = OpenVolume($sDriveToTest, $sError)
+	If ($hVolume == $INVALID_HANDLE_VALUE Or $hVolume == 0) Then
+		; $sError is managed by OpenVolume() function itself
 	Else
-;		MsgBox(1, "Drive found", "Hey, drive " & $var[$j] & " (" & String($hVolume) & ") is a good optical drive - let's check the tray...")
-		If IsTrayOpen($hVolume, $sDriveToTest) Then
+		If IsTrayOpen($hVolume, $sDriveToTest, $sError) Then
 			$bIsTrayOpen = True
 		EndIf
 
@@ -172,7 +147,7 @@ EndFunc
 ;-----------------------------------------------------
 
 
-Func IsTrayOpen(ByRef $hVolume, $drive)
+Func IsTrayOpen(ByRef $hVolume, $drive, $sError)
     $LONG_type = ("ptr")
     $returnvalue = DllStructCreate($LONG_type)
 
@@ -186,7 +161,7 @@ Func IsTrayOpen(ByRef $hVolume, $drive)
             "int", DllStructGetSize($spt), _
             "ptr", DllStructGetPtr($sptwb), _
             "int", DllStructGetSize($sptwb), _
-            "int_ptr", $returnvalue, _
+            "int*", $returnvalue, _
             "ptr", 0 _
             )
 
@@ -196,7 +171,9 @@ Func IsTrayOpen(ByRef $hVolume, $drive)
     EndIf
 
     If $ret[0] = 0 Then
-        _GetLastErrorMessage("Error in DeviceIoControl call to IOCTL_SCSI_PASS_THROUGH:")
+		$sError = "Error in DeviceIoControl call to IOCTL_SCSI_PASS_THROUGH:" & _GetLastErrorMessage()
+
+;        _GetLastErrorMessage("Error in DeviceIoControl call to IOCTL_SCSI_PASS_THROUGH:")
         Exit (1)
     EndIf
 
@@ -235,16 +212,20 @@ Func IsTrayOpen(ByRef $hVolume, $drive)
 
 EndFunc   ;==>IsTrayOpen
 
-Func OpenVolume($cDriveLetter)
+; if sError<>"" an error occured
+Func OpenVolume($cDriveLetter, ByRef $sError)
+
     ;   From AUTOIT forums
     Local $hVolume, $uDriveType, $szVolumeName, $dwAccessFlags
-    If StringLen($cDriveLetter) = 1 Then
+
+	If StringLen($cDriveLetter) = 1 Then
         $cDriveLetter = $cDriveLetter & ":"
     ElseIf StringLen($cDriveLetter) = 2 Then
         ;do nothing
     ElseIf StringLen($cDriveLetter) = 3 Then
         $cDriveLetter = StringLeft($cDriveLetter, 2)
     Else
+		$sError = "OpenVolume error: $cDriveLetter="  & $cDriveLetter & " invalid format"
         Return $INVALID_HANDLE_VALUE
     EndIf
 
@@ -259,6 +240,7 @@ Func OpenVolume($cDriveLetter)
             $dwAccessFlags = BitOR($GENERIC_READ, $GENERIC_WRITE)
             ;$dwAccessFlags = $GENERIC_READ
         Case Else
+			$sError = "OpenVolume error. DriveGetType returned " & $uDriveType
             Return $INVALID_HANDLE_VALUE
     EndSelect
 
@@ -279,15 +261,15 @@ Func OpenVolume($cDriveLetter)
             )
 
     If @error Then
-        MsgBox(1, "EXITING...", "CreateFile DLLCall failed!")
-        Exit (1)
+		$sError = "OpenVolume error. DllCall call to CreateFile failed with @error=" & @error
+        Return(0)
     EndIf
 
     Return $hVolume[0]
 EndFunc   ;==>OpenVolume
 
 Func _CloseVolume($hVolume)
-    Local $rVal = DllCall("kernel32.dll", "int", "CloseHandle", "hwnd", $hVolume)
+    Local $rVal = DllCall("kernel32.dll", "hwnd", "CloseHandle", "hwnd", $hVolume)
     If @error Then Return SetError(-1, -1, 0)
     Return $rVal[0]
 EndFunc   ;==>_CloseVolume
