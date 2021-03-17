@@ -405,11 +405,6 @@ Global $idOptionsCancel = -1
 Global $aOptionsDialogCtrlIds[20][2] ; array containing all the control ids of the options dialog. each element is a duo <String, controlid>
 Global $iOptionsDialogCtrlIdsNumber = 0
 
-; help dialog
-Global $hHelp = -1
-Global $idHelpClose = -1
-
-
 ; needed for menu commands management
 ;$bOk= GUIRegisterMsg($WM_SYSCOMMAND , "WM_SYSCOMMAND_Handler")
 
@@ -421,6 +416,7 @@ Global $iPreviousTime = 0 ; memorize previous time
 _Timer_SetTimer($hDiscAutoScanGUI, 1000, "UpdateVSOWinStatus")
 
 GUISetState() ; display the GUI
+
 
 
 ;;;;;;;;;;;
@@ -490,15 +486,9 @@ Do
 		GUISetState (@SW_DISABLE, $hDiscAutoScanGUI) ; disable main window
 
 	ElseIf ($GuiMsg == $iHelpButtonId) Then
-		; help dialog
-		; options dialog
-		$hHelp = CreateHelpDialog()
+		; help
+		ShellExecute($sLang == "FR" ? "discautoscanfr.chm" : "discautoscanen.chm")
 
-		GUISetState(@SW_SHOW, $hHelp) ; show options window
-
-	ElseIf ($GuiMsg == $idHelpClose) Then
-		GUIDelete($hHelp) ; close help window
-		$hHelp = -1
 	Else
 		; treat messages linked to options dialog controls
 		TreatOptionsDialogActions($GuiMsg, $aOptionsDialogCtrlIds, $iOptionsDialogCtrlIdsNumber)
@@ -2079,243 +2069,4 @@ Func ValidateOptionsDialog(ByRef $aOptionsDialogCtrlIds, ByRef $iOptionsDialogCt
 
 	Return $bAreOptionsValidated
 
-EndFunc
-
-
-; creation of the "options" dialog window
-Func CreateHelpDialog()
-
-	$hHelp = GUICreate(($sLang == "FR") ? "Aide" : "Help" , 950, 575, -1, -1,BitOR($WS_CAPTION,  $WS_POPUP, $DS_SETFOREGROUND) , -1, $hDiscAutoScanGUI )	;BitOR($WS_CAPTION,  $WS_POPUP, $DS_SETFOREGROUND), -1, $hDiscAutoScanGUI )
-
-	Local Const $sFontName = "Segoe UI"
-	Local Const $iFontSize = 8.5
-
-	Local $iControlY = 10
-	Local $HelpText
-
-	If ($sLang == "FR") Then
-		$HelpText = "Disc-auto-scan est un logiciel permettant de simplifier la vérification de l'intégrité physique de disques: cds, dvds et blurays."
-	Else
-		$HelpText = "Disc-auto-scan is a software which allows simplification of discs physical integrity check: cds, dvds and blurays."
-	EndIf
-	GUICtrlCreateLabel($HelpText, 15, $iControlY+2, 925, 17)
-	GUICtrlSetFont(-1, $iFontSize, 0, 0,$sFontName) ; change font
-	$iControlY += 22 ; for next control
-
-	If ($sLang == "FR") Then
-		$HelpText = 'A cette fin, le logiciel gratuit "VSO Inspector" (développé par VSO Software) est utilisé et piloté par Disc-auto-scan: '
-	Else
-		$HelpText = 'For this, the "VSO Inspector" freeware (developpped by VSO Software) is used and driven by Disc-auto-scan: '
-	EndIf
-	GUICtrlCreateLabel($HelpText, 15, $iControlY+2, 925, 17)
-	GUICtrlSetFont(-1, $iFontSize, 0, 0,$sFontName) ; change font
-	$iControlY += 18 ; for next control
-
-	If ($sLang == "FR") Then
-		$HelpText = '   à chaque disque inséré, "VSO Inspector" est automatiquement lancé ainsi que le scan du disque par ce dernier logiciel.'
-	Else
-		$HelpText = '   for each inserted disc, "VSO Inspector" is automatically launched, as well as the disc scan by this latest software.'
-	EndIf
-	GUICtrlCreateLabel($HelpText, 15, $iControlY+2, 850, 17)
-	GUICtrlSetFont(-1, $iFontSize, 0, 0,$sFontName) ; change font
-
-
-
-	$iControlY += 40 ; for next control
-
-	If ($sLang == "FR") Then
-		$HelpText = "Pour configurer Disc-auto-scan, veuillez ouvrir la boite des options en cliquant, dans la fenêtre principale, sur le bouton:"
-		GUICtrlCreateLabel($HelpText, 15, $iControlY+2, 630, 17)
-		GUICtrlSetFont(-1, $iFontSize, 0, 0,$sFontName) ; change font
-		GUICtrlCreateIcon("icons\25\parameters-25.ico", -1, 635 , $iControlY-3, 25, 25)
-	Else
-		$HelpText = "To configure Disc-auto-scan, please open the options dialog box by clicking, in the main window, on the button:"
-		GUICtrlCreateLabel($HelpText, 15, $iControlY+2, 590, 17)
-		GUICtrlSetFont(-1, $iFontSize, 0, 0,$sFontName) ; change font
-		GUICtrlCreateIcon("icons\25\parameters-25.ico", -1, 598 , $iControlY-3, 25, 25)
-	EndIf
-
-
-	$iControlY += 22 ; for next control
-
-	If ($sLang == "FR") Then
-		$HelpText = "  Dans la boite des options, vous pourrez avoir une description détaillée de chaque option, en passant la souris sur le texte de l'option."
-	Else
-		$HelpText = "  In the options dialog, you can get a detailed description of each option, by hovering mouse on the option text."
-	EndIf
-	GUICtrlCreateLabel($HelpText, 15, $iControlY+2, 775, 17)
-	GUICtrlSetFont(-1, $iFontSize, 0, 0,$sFontName) ; change font
-
-	$iControlY += 22 ; for next control
-
-	If ($sLang == "FR") Then
-		$HelpText = "  L'option la plus importante est d'indiquer à Disc-auto-scan la liste du/des drive(s) (lecteur ou graveur) à utiliser. Ceci est spécifié avec la lettre correspondante de Windows."
-	Else
-		$HelpText = "  The most important option is to indicate Disc-auto-scan the list of drive(s) (reader or burner) to be used. This is specified with the corresponding Windows letter."
-	EndIf
-	GUICtrlCreateLabel($HelpText, 15, $iControlY+2, 925, 17)
-	GUICtrlSetFont(-1, $iFontSize, 0, 0,$sFontName) ; change font
-
-	$iControlY += 40 ; for next control
-
-	If ($sLang == "FR") Then
-		$HelpText = "Une fois paramétré, voici comment utiliser Disc-auto-scan: "
-	Else
-		$HelpText = "When configured, here is how to use Disc-auto-scan: "
-	EndIf
-	GUICtrlCreateLabel($HelpText, 15, $iControlY+2, 925, 17)
-	GUICtrlSetFont(-1, $iFontSize, 0, 0,$sFontName) ; change font
-
-	$iControlY += 22 ; for next control
-
-	If ($sLang == "FR") Then
-		$HelpText = "Les drives (si plusieurs) sont organisés par lignes (une ligne par drive). En dessous de ces lignes, Disc-auto-scan indique les informations d'état et de disques traités."
-	Else
-		$HelpText = "The drives (if several) are organized by rows (one row per drive). Below these rows, Disc-auto-scan indicates status informations and treated discs."
-	EndIf
-	GUICtrlCreateLabel($HelpText, 15, $iControlY+2, 925, 17)
-	GUICtrlSetFont(-1, $iFontSize, 0, 0,$sFontName) ; change font
-
-	$iControlY += 32 ; for next control
-
-	If ($sLang == "FR") Then
-		$HelpText = "Pour chaque drive, des boutons correspondent aux actions relatives à ce drive:"
-	Else
-		$HelpText = "For each drive, buttons are corresponding to actions related to this drive:"
-	EndIf
-	GUICtrlCreateLabel($HelpText, 15, $iControlY+2, 925, 17)
-	GUICtrlSetFont(-1, $iFontSize, 0, 0,$sFontName) ; change font
-
-	$iControlY += 22 ; for next control
-
-	If ($sLang == "FR") Then
-		$HelpText = "  Le premier bouton, avec la lettre du drive, permet d'afficher ou minimiser la fenêtre correspondante de VSO Inspector (dernier scan lancé)."
-	Else
-		$HelpText = "  The first button, with the drive letter, allows to display or minimize the corresponding VSO Inspector window (last launched scan)."
-	EndIf
-	GUICtrlCreateLabel($HelpText, 15, $iControlY+2, 925, 17)
-	GUICtrlSetFont(-1, $iFontSize, 0, 0,$sFontName) ; change font
-
-	$iControlY += 18 ; for next control
-
-	If ($sLang == "FR") Then
-		$HelpText = "     Le fond de ce premier bouton est: gris si pas de fenêtre VSO Inspector ouverte, bleu ciel si le scan est en cours, et blanc si le scan est terminé."
-	Else
-		$HelpText = "     The background of this first button is: gray if no opened VSO Inspector window, cyan if scan is running, and white if scan is ended."
-	EndIf
-	GUICtrlCreateLabel($HelpText, 15, $iControlY+2, 925, 17)
-	GUICtrlSetFont(-1, $iFontSize, 0, 0,$sFontName) ; change font
-
-	$iControlY += 26 ; for next control
-
-
-	GUICtrlCreateIcon("icons\25\close-25.ico", -1, 20 , $iControlY-3, 25, 25)
-	If ($sLang == "FR") Then
-		$HelpText = "permet de fermer la fenêtre VSO Inspector."
-	Else
-		$HelpText = "allows to close the VSO Inspector window."
-	EndIf
-	GUICtrlCreateLabel($HelpText, 47, $iControlY+2, 925, 17)
-	GUICtrlSetFont(-1, $iFontSize, 0, 0,$sFontName) ; change font
-
-	$iControlY += 25 ; for next control
-
-	GUICtrlCreateIcon("icons\25\save-as-25.ico", -1, 20 , $iControlY-3, 25, 25)
-	If ($sLang == "FR") Then
-		$HelpText = "permet d'enregistrer le log du scan de VSO Inspector. Si un scan est encore en cours, il est d'abord terminé (annulation). Le nom du fichier est pré-rempli au nom du disque."
-	Else
-		$HelpText = "allows to save the VSO Inspector scan log. If a scan is running, it is first terminated (cancelled). The filename is pre-filled with the disc name."
-	EndIf
-	GUICtrlCreateLabel($HelpText, 47, $iControlY+2, 925, 17)
-	GUICtrlSetFont(-1, $iFontSize, 0, 0,$sFontName) ; change font
-
-	$iControlY += 25 ; for next control
-
-	GUICtrlCreateIcon("icons\25\eject-25.ico", -1, 20 , $iControlY-3, 25, 25)
-	If ($sLang == "FR") Then
-		$HelpText = "pilote le tiroir du drive (éjection et fermeture)."
-	Else
-		$HelpText = "pilots the drive tray (ejection and closure)."
-	EndIf
-	GUICtrlCreateLabel($HelpText, 47, $iControlY+2, 925, 17)
-	GUICtrlSetFont(-1, $iFontSize, 0, 0,$sFontName) ; change font
-
-	$iControlY += 25 ; for next control
-
-	If ($sLang == "FR") Then
-		$HelpText = "  La suite de la ligne pour le drive indique les informations suivantes: taille et nom du disque (nom donné par l'éditeur), "
-	Else
-		$HelpText = "  The rest of the line for the drive indicates the following informations: size and name of disc (name given by the editor), "
-	EndIf
-	GUICtrlCreateLabel($HelpText, 15, $iControlY+2, 925, 17)
-	GUICtrlSetFont(-1, $iFontSize, 0, 0,$sFontName) ; change font
-
-	$iControlY += 18 ; for next control
-
-	If ($sLang == "FR") Then
-		$HelpText = "       puis l'état du scan de VSO Inspector: barre de progrès, vitesse actuelle de lecture, et pourcentages pour les secteurs lus: Bon, Problème, et Erreur."
-	Else
-		$HelpText = "       and then the VSO Inspector scan state: progress bar, current reading speed, and percentages for read sectors: Good, Problem, and Error."
-	EndIf
-	GUICtrlCreateLabel($HelpText, 15, $iControlY+2, 925, 17)
-	GUICtrlSetFont(-1, $iFontSize, 0, 0,$sFontName) ; change font
-
-	$iControlY += 18 ; for next control
-
-	If ($sLang == "FR") Then
-		$HelpText = "  NB: pour que ces états puissent être techniquement repris de la fenêtre VSO Inspector, cette dernière ne doit pas être minimisée dans Windows."
-	Else
-		$HelpText = "  NOTE: in order that these states can be technically retrieved from the VSO Inspector window, this one must not be minimized in Windows."
-	EndIf
-	GUICtrlCreateLabel($HelpText, 15, $iControlY+2, 925, 17)
-	GUICtrlSetFont(-1, $iFontSize, 0, 0,$sFontName) ; change font
-
-	$iControlY += 40 ; for next control
-
-	If ($sLang == "FR") Then
-		$HelpText = "IMPORTANT: A chaque fois que vous insérez un disque, vous devez attendre (i.e. ne plus agir dans Windows) que le disque soit détecté, puis que le scan soit lancé. "
-	Else
-		$HelpText = "IMPORTANT: At each time you insert a disc, you must wait (mean. do not interact with Windows) that the disc is detected, and then the scan is launched. "
-	EndIf
-	GUICtrlCreateLabel($HelpText, 15, $iControlY+2, 925, 17)
-	GUICtrlSetFont(-1, $iFontSize, 0, 0,$sFontName) ; change font
-
-	$iControlY += 18 ; for next control
-
-	If ($sLang == "FR") Then
-		$HelpText = "    Seulement ensuite vous pouvez reprendre le contrôle avec Windows (vous pouvez afficher vos fenêtres de travail par dessus celles de VSO Inspector voire Disc-auto-scan)"
-	Else
-		$HelpText = "    Only after that you can take back control of Windows (you can display your working windows/applications on top of VSO Inspector or even Disc-auto-scan windows)"
-	EndIf
-	GUICtrlCreateLabel($HelpText, 15, $iControlY+2, 925, 17)
-	GUICtrlSetFont(-1, $iFontSize, 0, 0,$sFontName) ; change font
-
-	$iControlY += 22 ; for next control
-
-	If ($sLang == "FR") Then
-		$HelpText = "En fin de scan, pour les blurays veuillez contrôler d'office manuellement le résultat dans la fenêtre VSO Inspector correspondante."
-	Else
-		$HelpText = "At end of scan, for blurays please always control manually the result in the corresponding VSO Inspector window."
-	EndIf
-	GUICtrlCreateLabel($HelpText, 15, $iControlY+2, 925, 17)
-	GUICtrlSetFont(-1, $iFontSize, 0, 0,$sFontName) ; change font
-
-	$iControlY += 18 ; for next control
-
-	If ($sLang == "FR") Then
-		$HelpText = "    Du fait du grand nombre de secteurs des disques blurays, le pourcentage 'Problème' peut rester à zéro malgré un ou quelques secteur(s) non fiable(s)."
-	Else
-		$HelpText = "    Because bluray discs have a large number of sectors, the 'Problem' percentage may stay at zero in spite of one or a few unreliable sector(s)."
-	EndIf
-	GUICtrlCreateLabel($HelpText, 15, $iControlY+2, 925, 17)
-	GUICtrlSetFont(-1, $iFontSize, 0, 0,$sFontName) ; change font
-
-	$iControlY += 22 ; for next control
-
-
-	$iControlY += 10 ; more space before close button
-
-	$idHelpClose = GUICtrlCreateButton(($sLang == "FR") ? "Fermer" : "Close", (950/2)-22, $iControlY, 45, 25)
-
-	return $hHelp
 EndFunc
