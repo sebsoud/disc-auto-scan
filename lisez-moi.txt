@@ -1,6 +1,8 @@
 disc-auto-scan
 --------------
 
+https://github.com/sebsoud/disc-auto-scan/releases
+
 Ce logiciel permet d'automatiser partiellement le scan de surface de disques (cd, dvd, bluray), afin de vérifier leur intégrité physique.
 Comme l'informe le site http://bluraydefectueux.com, des disques ont des problèmes de vieillissement (voir site pour détails)
 
@@ -20,6 +22,12 @@ a) "MPC-HC"
 site de téléchargement officiel:
 https://github.com/clsid2/mpc-hc/releases
 
+Méthode simple: vous pouvez installer:
+https://github.com/clsid2/mpc-hc/releases/download/1.9.9/MPC-HC.1.9.9.x86.exe
+
+---
+Sinon, détails si vous souhaitez la dernière version:
+
 Chaque release est présentée par "bloc d'infos". Le numéro de release est indiqué dans la colonne de gauche
 Rechercher la dernière release (numéro le plus grand) qui est NON notée "Development Build"
 En bas du bloc d'info de cette release, cliquer sur "Assets" pour avoir les détails.
@@ -29,34 +37,15 @@ Le choix dépend de la version de windows que vous possédez; la version 64 bits
 Par défaut vous pouvez choisir l'installeur dont le nom finit par x86.exe
 
 Voici par exemple un lien direct vers la version 1.9.9: https://github.com/clsid2/mpc-hc/releases/tag/1.9.9
+---
 
 b) "VSO Inspector" voir: http://fr.vso-software.fr/products/inspector/inspector.php pour téléchargement
+"vso_inspector_2_0_2_0_setup.exe" est aussi hébergé sur le projet github de disc-auto-scan, afin d'avoir une version stable (je remercie la société VSO Software d'avoir permis cela,
+cet installeur étant l'original).
 
 ----
 3) Paramétrer disc-auto-scan
-Editer le fichier "disc-auto-scan.ini"
-
-Voici les entrées à paramétrer pour votre situation:
-
-a) DriveList permet de lister les lecteurs à surveiller. Indiquer la ou les lettres (séparateur: espace)
-exemples:
-DriveList=D
-DriveList=E F
-
-b) disc-auto-scan récupère automatiquement les chemins d'installation de MPC-HC et VSO Inspector depuis les raccourcis du menu démarrer, 
-que les programmes d'installation ont crée
-
-S'il y au lancement de disc-auto-scan il y a un message d'erreur correspondant à ces chemins,
-alors cette reconnaissance ne fonctionne plus (le programme d'installation a changé de logique)
-et il vous faut faire manuellement correspondre les entrées:
-VSOInspectorPath=  
-et
-MPCHC=
-dans le fichier "disc-auto-scan.ini"
-
-Le plus simple pour vérifier/trouver ce paramètre:
-- clic droit sur le raccourci qui a été crée sur le bureau, puis "Propriétés"
-- le bon paramètre est alors dans le champ "Cible". Vous pouvez faire un copier-coller de ce texte, sachant qu'il faut enlever les guillemets dans disc-auto-scan.ini
+voir l'aide intégrée (icône ?) pour plus de détails
 
 
 -----------

@@ -1,11 +1,12 @@
-0.2 beta
+1.0
 --------
+- récupérations d'informations sur le scan en cours. La fenêtre VSO Inspector correspondante ne doit pas être minimisée pour que cela fonctionne.
+- indications texte sur les disques, le statut de scan
 - amélioration de la boucle de détection de disque; message ajouté au cas où l'utilisateur insère un disque avant que le traitement du précédant soit terminé
 - répartition automatique sur l'écran des fenêtres VSO Inspector; ceci est utile pour les scans multi-drives
   Optimisé d'après la résolution d'écran, la résolution minimale recommandée est 1920*1080, mais cela supporte une plus petite résolution (minimum 1280*800)
 - ajout du paramètre VSOInspectorWindowWidthIncrease dans disc-auto-scan.ini: spécifie le nombre de pixel par lequel augmenter la largeur des fenêtres VSO Inpector. Limité à 200 pixels
-- ajout de boutons
- Chaque bouton permet de restaurer/minimiser la dernière fenêtre VSO Inspector lancée correspondante
+- ajout de boutons pour chaque drive
 
 
 
